@@ -1,0 +1,27 @@
+[package]
+name = "wnfs-cli"
+version = "0.1.0"
+description = "A WNFS CLI"
+keywords = []
+categories = []
+
+include = ["/src", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+license = "Apache-2.0 or MIT"
+readme = "README.md"
+edition = "2021"
+documentation = "https://docs.rs/wnfs-cli"
+repository = "https://github.com/appcypher/wnfs-demo"
+authors = ["Stephen Akinyemi <appcypher@outlook.com>"]
+
+[dependencies]
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+[features]
+default = []
+
+# Speedup build on macOS
+# See https://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html#splitting-debug-information
+[profile.dev]
+split-debuginfo = "unpacked"
