@@ -17,6 +17,14 @@ authors = ["Stephen Akinyemi <appcypher@outlook.com>"]
 anyhow = "1.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
+clap = { version = "4.0", features = ["derive"] }
+crossterm = "0.25"
+wnfs-store = { path = "../wnfs-store" }
+wnfs = { git = "https://github.com/wnfs-wg/rs-wnfs", branch = "appcypher/hamt-diff" }
+
+[[bin]]
+name = "wnfs"
+path = "src/main.rs"
 
 [features]
 default = []

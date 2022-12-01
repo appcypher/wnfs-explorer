@@ -1,4 +1,16 @@
-#![cfg_attr(docsrs, feature(doc_cfg))]
-#![warn(missing_debug_implementations, missing_docs, rust_2018_idioms)]
-#![deny(unreachable_pub, private_in_public)]
-//! wnfs-store
+pub mod client;
+pub mod error;
+pub mod routes;
+
+//-----------------------------------------------------------------------------
+// Constants
+//-----------------------------------------------------------------------------
+
+pub const DEFAULT_PORT: u16 = 5054;
+pub const DEFAULT_ADDR: [u8; 4] = [127, 0, 0, 1];
+
+//-----------------------------------------------------------------------------
+// Type Definitions
+//-----------------------------------------------------------------------------
+
+pub type Result<T> = std::result::Result<T, error::AppError>;
