@@ -4,6 +4,7 @@ use axum::{
 };
 use reqwest::StatusCode;
 use serde_json::json;
+use std::error::Error;
 
 //----------------------------------------------------------------
 // Types
@@ -12,6 +13,14 @@ use serde_json::json;
 pub enum AppError {
     InternalServerError(anyhow::Error),
     ValidationError,
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum InternalError {
+    #[error("Cannot fetch from store")]
+    NotFoundInStore,
+    #[error("Invalid data store kind: {0}")]
+    InvalidDataStoreKind(String),
 }
 
 //----------------------------------------------------------------
@@ -40,4 +49,15 @@ impl IntoResponse for AppError {
 
         (status, body).into_response()
     }
+}
+
+//----------------------------------------------------------------
+// Functions
+//----------------------------------------------------------------
+
+pub(crate) fn anyhow<E>(err: E) -> AppError
+where
+    E: Error + Send + Sync + 'static,
+{
+    AppError::InternalServerError(err.into())
 }

@@ -1,4 +1,7 @@
-use crate::routes::store::{GetBody, PutBody};
+use crate::{
+    routes::{GetBody, PutBody},
+    DataStoreKind,
+};
 use anyhow::Result;
 use async_trait::async_trait;
 use reqwest::Client;
@@ -15,6 +18,7 @@ use wnfs::{
 pub struct WnfsStore {
     addr: SocketAddr,
     store_name: Option<String>,
+    datastore: DataStoreKind,
 }
 
 //------------------------------------------------------------------------------
@@ -22,8 +26,12 @@ pub struct WnfsStore {
 //------------------------------------------------------------------------------
 
 impl WnfsStore {
-    pub fn new(addr: SocketAddr, store_name: Option<String>) -> Self {
-        Self { addr, store_name }
+    pub fn new(addr: SocketAddr, store_name: Option<String>, datastore: DataStoreKind) -> Self {
+        Self {
+            addr,
+            store_name,
+            datastore,
+        }
     }
 }
 
@@ -36,6 +44,7 @@ impl BlockStore for WnfsStore {
             .json(&GetBody {
                 cid: *cid,
                 store_name: self.store_name.clone(),
+                datastore: self.datastore.into(),
             })
             .send()
             .await?;
@@ -51,6 +60,7 @@ impl BlockStore for WnfsStore {
                 bytes,
                 codec: codec.into(),
                 store_name: self.store_name.clone(),
+                datastore: self.datastore.into(),
             })
             .send()
             .await?;

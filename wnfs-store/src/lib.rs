@@ -1,6 +1,11 @@
 pub mod client;
+mod datastore;
 pub mod error;
+pub(crate) mod models;
 pub mod routes;
+mod schema;
+
+pub use datastore::*;
 
 //-----------------------------------------------------------------------------
 // Constants
