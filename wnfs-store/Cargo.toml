@@ -30,7 +30,7 @@ wnfs = { git = "https://github.com/wnfs-wg/rs-wnfs", branch = "appcypher/hamt-di
 once_cell = "1.16.0"
 hashbrown = "0.13.1"
 thiserror = "1.0.37"
-libipld = "0.14"
+libipld = "0.15"
 multihash = "0.16"
 
 [[bin]]
