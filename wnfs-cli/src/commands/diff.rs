@@ -1,3 +1,5 @@
-pub(crate) fn test_diff() {
+use crate::Noun;
+
+pub(crate) fn handle(noun: Noun) {
     println!("Diff");
 }

@@ -1,5 +1,6 @@
 use std::{collections::HashMap, rc::Rc};
-use wnfs::{PrivateDirectory, PrivateNode, PublicDirectory};
+use wnfs::{private::PrivateRef, PrivateDirectory, PrivateNode, PublicDirectory};
+use wnfs_store::DataStoreKind;
 
 pub type Root<T> = (String, Rc<T>);
 
@@ -8,6 +9,8 @@ pub struct PrivateFileSystem {
     pub root: Root<PrivateDirectory>,
     pub hamt_name: String,
     pub store_name: String,
+    pub datastore: DataStoreKind,
+    pub privateref: PrivateRef,
     pub map: HashMap<String, PrivateNode>,
 }
 
@@ -15,5 +18,7 @@ pub struct PrivateFileSystem {
 pub struct PublicFileSystem {
     pub root: Root<PublicDirectory>,
     pub store_name: String,
+    pub datastore: DataStoreKind,
+    pub privateref: PrivateRef,
     pub map: HashMap<String, PrivateNode>,
 }

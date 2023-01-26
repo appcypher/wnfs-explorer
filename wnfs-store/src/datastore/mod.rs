@@ -22,7 +22,7 @@ pub(super) trait DataStore {
     async fn save(name: Option<String>, bytes: Vec<u8>, codec: IpldCodec) -> Result<Cid>;
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub enum DataStoreKind {
     Memory,
     Db,

@@ -1,3 +1,5 @@
-pub(crate) fn test_merge() {
+use crate::Noun;
+
+pub(crate) fn handle(noun: Noun) {
     println!("Merge: Is not yet implemented!");
 }

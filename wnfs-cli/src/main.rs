@@ -8,30 +8,46 @@ use commands::{diff, merge, open};
 #[command(author, version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Option<Verb>,
 }
 
 #[derive(Subcommand)]
-enum Commands {
-    Open {},
-    Diff {},
-    Merge {},
+enum Verb {
+    Open {
+        #[clap(subcommand)]
+        noun: Noun,
+    },
+    Diff {
+        #[clap(subcommand)]
+        noun: Noun,
+    },
+    Merge {
+        #[clap(subcommand)]
+        noun: Noun,
+    },
 }
 
-/// Main entry point.
+#[derive(Subcommand)]
+enum Noun {
+    Fs,
+    Hamt,
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
-        Some(Commands::Open {}) => {
-            open::test_open()?;
+        Some(Verb::Open { noun }) => {
+            open::handle(noun)?;
         }
-        Some(Commands::Diff {}) => {
-            diff::test_diff();
+        Some(Verb::Diff { noun }) => {
+            diff::handle(noun);
         }
-        Some(Commands::Merge {}) => {
-            merge::test_merge();
+        Some(Verb::Merge { noun }) => {
+            merge::handle(noun);
         }
-        None => {}
+        None => {
+            Cli::parse_from(&["wnfs-cli", "--help"]);
+        }
     }
 
     Ok(())
