@@ -1,7 +1,7 @@
 use crate::{db::StoreDb, memory::StoreMem, DataStore, DataStoreKind, Result};
 use axum::{response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
-use wnfs::ipld::{Cid, IpldCodec};
+use wnfs::libipld::{Cid, IpldCodec};
 
 //----------------------------------------------------------------
 // Types
@@ -25,10 +25,10 @@ pub struct PutBody {
 #[derive(Serialize, Deserialize, Debug)]
 #[repr(C)]
 pub enum IpldCodecRepr {
-    Raw = 0x00,
-    DagCbor = 0x01,
-    DagJson = 0x02,
-    DagPb = 0x03,
+    DagPb = 0x70,
+    DagCbor = 0x71,
+    DagJson = 0x0129,
+    Raw = 0x55,
 }
 
 //----------------------------------------------------------------

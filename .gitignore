@@ -16,3 +16,4 @@ private
 .history
 .DS_Store
 **/.env
+**/config.toml

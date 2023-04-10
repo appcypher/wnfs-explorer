@@ -1,52 +1,28 @@
-mod commands;
-
 use anyhow::Result;
-use clap::{Parser, Subcommand};
-use commands::{diff, merge, open};
+use clap::Parser;
+use wnfs_cli::{config, Verb, Cli, repl, open, diff, merge};
 
-#[derive(Parser)]
-#[command(author, version, about, long_about = None)]
-struct Cli {
-    #[command(subcommand)]
-    command: Option<Verb>,
-}
-
-#[derive(Subcommand)]
-enum Verb {
-    Open {
-        #[clap(subcommand)]
-        noun: Noun,
-    },
-    Diff {
-        #[clap(subcommand)]
-        noun: Noun,
-    },
-    Merge {
-        #[clap(subcommand)]
-        noun: Noun,
-    },
-}
-
-#[derive(Subcommand)]
-enum Noun {
-    Fs,
-    Hamt,
-}
-
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
-        Some(Verb::Open { noun }) => {
-            open::handle(noun)?;
+        Some(Verb::Config(config)) => {
+            config::handle(config)?;
+        }
+        Some(Verb::Repl {}) => {
+            repl::handle()?;
         }
         Some(Verb::Diff { noun }) => {
-            diff::handle(noun);
+            diff::handle(noun)?;
+        }
+        Some(Verb::Open { noun }) => {
+            open::handle(noun).await?;
         }
         Some(Verb::Merge { noun }) => {
-            merge::handle(noun);
+            merge::handle(noun)?;
         }
         None => {
-            Cli::parse_from(&["wnfs-cli", "--help"]);
+            Cli::parse_from(["wnfs-cli", "--help"]);
         }
     }
 

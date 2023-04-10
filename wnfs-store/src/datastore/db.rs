@@ -7,12 +7,13 @@ use crate::{
 };
 use async_trait::async_trait;
 use diesel::{prelude::*, Connection, PgConnection, QueryDsl, RunQueryDsl};
-use libipld::cid::Version;
-use multihash::{Code, MultihashDigest};
 use once_cell::sync::Lazy;
 use std::{env, mem};
 use tokio::sync::Mutex;
-use wnfs::ipld::{Cid, IpldCodec};
+use wnfs::libipld::{
+    multihash::{Code, MultihashDigest},
+    Cid, IpldCodec,
+};
 
 //----------------------------------------------------------------
 // Globals
@@ -56,7 +57,7 @@ impl DataStore for StoreDb {
         let mut conn = CONNECTION.lock().await;
 
         let hash = Code::Sha2_256.digest(&bytes);
-        let cid = Cid::new(Version::V1, codec.into(), hash).map_err(error::anyhow)?;
+        let cid = Cid::new_v1(codec.into(), hash);
 
         diesel::insert_into(store::table)
             .values(NewStore {

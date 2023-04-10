@@ -4,21 +4,22 @@ use crate::{
 };
 use anyhow::Result;
 use async_trait::async_trait;
-use reqwest::Client;
-use std::{borrow::Cow, net::SocketAddr};
+use reqwest::{Client, Url};
+use std::borrow::Cow;
 use wnfs::{
-    ipld::{Cid, IpldCodec},
-    BlockStore,
+    common::BlockStore,
+    libipld::{Cid, IpldCodec},
 };
 
 //------------------------------------------------------------------------------
 // Types
 //------------------------------------------------------------------------------
 
+#[derive(Debug, Clone)]
 pub struct WnfsStore {
-    addr: SocketAddr,
-    store_name: Option<String>,
-    datastore: DataStoreKind,
+    pub url: Url,
+    pub store_name: Option<String>,
+    pub datastore: DataStoreKind,
 }
 
 //------------------------------------------------------------------------------
@@ -26,9 +27,9 @@ pub struct WnfsStore {
 //------------------------------------------------------------------------------
 
 impl WnfsStore {
-    pub fn new(addr: SocketAddr, store_name: Option<String>, datastore: DataStoreKind) -> Self {
+    pub fn new(url: Url, store_name: Option<String>, datastore: DataStoreKind) -> Self {
         Self {
-            addr,
+            url,
             store_name,
             datastore,
         }
@@ -38,9 +39,8 @@ impl WnfsStore {
 #[async_trait(?Send)]
 impl BlockStore for WnfsStore {
     async fn get_block<'a>(&'a self, cid: &Cid) -> Result<Cow<'a, Vec<u8>>> {
-        let url = format!("{}/store", self.addr);
         let resp = Client::new()
-            .get(url)
+            .get(self.url.clone())
             .json(&GetBody {
                 cid: *cid,
                 store_name: self.store_name.clone(),
@@ -53,9 +53,8 @@ impl BlockStore for WnfsStore {
     }
 
     async fn put_block(&mut self, bytes: Vec<u8>, codec: IpldCodec) -> Result<Cid> {
-        let url = format!("{}/store", self.addr);
         let resp = Client::new()
-            .put(url)
+            .put(self.url.clone())
             .json(&PutBody {
                 bytes,
                 codec: codec.into(),

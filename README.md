@@ -1,27 +1,27 @@
 <div align="center">
-  <a href="https://github.com/appcypher/wnfs-demo" target="_blank">
-    <img src="https://raw.githubusercontent.com/appcypher/wnfs-demo/main/assets/a_logo.png" alt="wnfs-demo Logo" width="100"></img>
+  <a href="https://github.com/appcypher/wnfs-explorer" target="_blank">
+    <img src="https://raw.githubusercontent.com/appcypher/wnfs-explorer/main/assets/logo.png" alt="wnfs-explorer Logo" width="100"></img>
   </a>
 
-  <h1 align="center">wnfs-demo</h1>
+  <h1 align="center">wnfs-explorer</h1>
 
   <p>
-    <a href="https://crates.io/crates/wnfs-demo">
-      <img src="https://img.shields.io/crates/v/wnfs-demo?label=crates" alt="Crate">
+    <a href="https://crates.io/crates/wnfs-explorer">
+      <img src="https://img.shields.io/crates/v/wnfs-explorer?label=crates" alt="Crate">
     </a>
-    <a href="https://codecov.io/gh/appcypher/wnfs-demo">
-      <img src="https://codecov.io/gh/appcypher/wnfs-demo/branch/main/graph/badge.svg?token=SOMETOKEN" alt="Code Coverage"/>
+    <a href="https://codecov.io/gh/appcypher/wnfs-explorer">
+      <img src="https://codecov.io/gh/appcypher/wnfs-explorer/branch/main/graph/badge.svg?token=SOMETOKEN" alt="Code Coverage"/>
     </a>
-    <a href="https://github.com/appcypher/wnfs-demo/actions?query=">
-      <img src="https://github.com/appcypher/wnfs-demo/actions/workflows/tests_and_checks.yml/badge.svg" alt="Build Status">
+    <a href="https://github.com/appcypher/wnfs-explorer/actions?query=">
+      <img src="https://github.com/appcypher/wnfs-explorer/actions/workflows/tests_and_checks.yml/badge.svg" alt="Build Status">
     </a>
-    <a href="https://github.com/appcypher/wnfs-demo/blob/main/LICENSE-APACHE">
+    <a href="https://github.com/appcypher/wnfs-explorer/blob/main/LICENSE-APACHE">
       <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License-Apache">
     </a>
-    <a href="https://github.com/appcypher/wnfs-demo/blob/main/LICENSE-MIT">
+    <a href="https://github.com/appcypher/wnfs-explorer/blob/main/LICENSE-MIT">
       <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License-MIT">
     </a>
-    <a href="https://docs.rs/wnfs-demo">
+    <a href="https://docs.rs/wnfs-explorer">
       <img src="https://img.shields.io/static/v1?label=Docs&message=docs.rs&color=blue" alt="Docs">
     </a>
   </p>
@@ -33,7 +33,7 @@
 
 ## Outline
 
-- [Building the Project](#building the project)
+- [Building the Project](#building-the-project)
 - [Testing the Project](#testing-the-project)
 - [Contributing](#contributing)
 - [Getting Help](#getting-help)
@@ -45,7 +45,7 @@
 ### Using `cargo`
 
 ```console
-cargo install wnfs-demo
+cargo install wnfs-explorer
 ```
 
 ## Testing the Project
@@ -63,6 +63,7 @@ We have a [contributing guide](./CONTRIBUTING.md) to help you get involved. We
 also adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ### Nix
+
 This repository contains a [Nix flake][nix-flake] that initiates both the Rust
 toolchain set in [rust-toolchain.toml](./rust-toolchain.toml) and a
 [pre-commit hook](#pre-commit-hook). It also installs helpful cargo binaries for
@@ -94,7 +95,7 @@ hooks. Please run this before every commit and/or push.
 
 ### Conventional Commits
 
-This project *lightly* follows the [Conventional Commits
+This project _lightly_ follows the [Conventional Commits
 convention][commit-spec-site] to help explain
 commit history and tie in with our release process. The full specification
 can be found [here][commit-spec]. We recommend prefixing your commits with
@@ -134,16 +135,15 @@ submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as above, without any additional terms or
 conditions.
 
-
 [apache]: https://www.apache.org/licenses/LICENSE-2.0
 [cargo-expand]: https://github.com/dtolnay/cargo-expand
 [cargo-udeps]: https://github.com/est31/cargo-udeps
 [cargo-watch]: https://github.com/watchexec/cargo-watch
 [commit-spec]: https://www.conventionalcommits.org/en/v1.0.0/#specification
 [commit-spec-site]: https://www.conventionalcommits.org/
-[direnv]:https://direnv.net/
+[direnv]: https://direnv.net/
 [irust]: https://github.com/sigmaSd/IRust
 [mit]: http://opensource.org/licenses/MIT
-[nix]:https://nixos.org/download.html
+[nix]: https://nixos.org/download.html
 [nix-flake]: https://nixos.wiki/wiki/Flakes
 [pre-commit]: https://pre-commit.com/

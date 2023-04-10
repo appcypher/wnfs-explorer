@@ -5,10 +5,11 @@ use crate::{
 use async_trait::async_trait;
 use hashbrown::HashMap;
 use lazy_static::lazy_static;
-use libipld::cid::Version;
-use multihash::{Code, MultihashDigest};
 use tokio::sync::Mutex;
-use wnfs::ipld::{Cid, IpldCodec};
+use wnfs::libipld::{
+    multihash::{Code, MultihashDigest},
+    Cid, IpldCodec,
+};
 
 //----------------------------------------------------------------
 // Globals
@@ -53,7 +54,7 @@ impl DataStore for StoreMem {
         let store = stores.entry(name).or_default();
 
         let hash = Code::Sha2_256.digest(&bytes);
-        let cid = Cid::new(Version::V1, codec.into(), hash).map_err(error::anyhow)?;
+        let cid = Cid::new_v1(codec.into(), hash);
 
         store.insert(cid, bytes);
 

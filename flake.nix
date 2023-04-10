@@ -1,5 +1,5 @@
 {
-  description = "wnfs-demo";
+  description = "wnfs-explorer";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
@@ -44,7 +44,7 @@
     rec
     {
       devShells.default = pkgs.mkShell {
-        name = "wnfs-demo";
+        name = "wnfs-explorer";
         nativeBuildInputs = with pkgs; [
           # The ordering of these two items is important. For nightly rustfmt to be used instead of
           # the rustfmt provided by `rust-toolchain`, it must appear first in the list. This is

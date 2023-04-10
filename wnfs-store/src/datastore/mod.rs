@@ -10,7 +10,7 @@ use crate::{
     Result,
 };
 use async_trait::async_trait;
-use wnfs::ipld::{Cid, IpldCodec};
+use wnfs::libipld::{Cid, IpldCodec};
 
 //----------------------------------------------------------------
 // Types
@@ -22,10 +22,14 @@ pub(super) trait DataStore {
     async fn save(name: Option<String>, bytes: Vec<u8>, codec: IpldCodec) -> Result<Cid>;
 }
 
+// TODO(appcypher): Hide each behind a feature flag except for memory and unknown.
 #[derive(Debug, Clone, Copy)]
 pub enum DataStoreKind {
     Memory,
     Db,
+    // Ipfs,
+    // NativeFs,
+    // Unknown,
 }
 
 //----------------------------------------------------------------
