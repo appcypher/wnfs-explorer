@@ -4,8 +4,8 @@ use crossterm::{
     cursor::{self, MoveDown, MoveLeft, MoveTo},
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
     style::{self, Print, SetAttribute, SetBackgroundColor, SetForegroundColor},
-    terminal::{self, disable_raw_mode, enable_raw_mode, Clear, ClearType},
-    QueueableCommand,
+    terminal::{self, disable_raw_mode, enable_raw_mode, Clear, ClearType, ScrollDown, ScrollUp},
+    ExecutableCommand, QueueableCommand,
 };
 use std::{
     cell::RefCell,
@@ -35,6 +35,9 @@ pub struct TermContext {
 // Implementations
 //------------------------------------------------------------------------------
 
+// TODO(appcypher): Fix whitespace artefacts.
+// TODO(appcypher): Implement scrolling.
+// TODO(appcypher): Implement modal widgets.
 impl TermContext {
     pub fn new() -> Result<Self> {
         Ok(Self {
@@ -51,6 +54,7 @@ impl TermContext {
         bounds: Size,
     ) -> Result<()> {
         enable_raw_mode()?;
+        self.clear()?;
         self.render(&root_widget, parent_offset, bounds)?;
         loop {
             if event::poll(Duration::from_millis(100))? {
@@ -64,8 +68,8 @@ impl TermContext {
                         self.set_next_focus(&root_widget)?;
                     }
 
+                    self.clear()?;
                     self.render(&root_widget, parent_offset, bounds)?;
-
                     self.notify_focus_widget(event)?;
                 }
             }
@@ -92,8 +96,10 @@ impl TermContext {
         if let Some(focus_widget) = self.focus_widget.as_ref().map(Rc::clone) {
             let focus_widget_ref = focus_widget.borrow();
             if let Some(child) = focus_widget_ref.children.first() {
-                self.focus_widget = Some(Rc::clone(child));
-                return Ok(());
+                if child.borrow().focusable {
+                    self.focus_widget = Some(Rc::clone(child));
+                    return Ok(());
+                }
             }
 
             if let Some(ref parent) = focus_widget_ref.parent {
@@ -103,18 +109,20 @@ impl TermContext {
                     while let Some(child) = children.next() {
                         if Rc::ptr_eq(child, &focus_widget) {
                             if let Some(next_child) = children.next() {
-                                self.focus_widget = Some(Rc::clone(next_child));
-                                return Ok(());
+                                if next_child.borrow().focusable {
+                                    self.focus_widget = Some(Rc::clone(next_child));
+                                    return Ok(());
+                                }
                             }
                         }
                     }
                 }
-            } else {
-                println!("no (parent): {:?}", focus_widget_ref.parent);
             }
         }
 
-        self.focus_widget = Some(Rc::clone(root_widget));
+        if root_widget.borrow().focusable {
+            self.focus_widget = Some(Rc::clone(root_widget));
+        }
 
         Ok(())
     }
@@ -123,50 +131,59 @@ impl TermContext {
         &mut self,
         widget: &Rc<RefCell<Widget>>,
         parent_offset: Point,
-        bounds: Size,
+        parent_bounds: Size,
     ) -> Result<()> {
-        let out = &mut stdout();
         let widget_ref = widget.borrow();
-        let total_offset = self.cursor_position + parent_offset + widget_ref.position;
 
-        // Clear the screen.
-        self.clear()?;
+        // TODO(appcypher): We should make room for rendering the widget.
+        // self.make_room(parent_bounds)?;
 
-        // TODO(appcypher): We should check that the remaining space is enough to render the widget. We scroll if not.
-        // if self.canvas_height() < widget.size.height { ... }
+        // Calculate the total offset of the widget.
+        let total_offset = self.calculate_total_offset(parent_offset, widget_ref.position);
+
+        // TODO(appcypher): Consider border of parents in clipped bounds.
+        let clipped_bounds = Size::new(
+            u16::min(
+                (parent_offset.x + parent_bounds.width),
+                widget_ref.size.width,
+            ),
+            u16::min(
+                total_offset.y - (parent_offset.y + parent_bounds.height),
+                widget_ref.size.height,
+            ),
+        );
 
         // Render background.
-        self.render_background(widget, total_offset)?;
+        self.render_background(widget, total_offset, clipped_bounds)?;
 
-        // Render text using specified color and style.
-        self.render_text(widget, total_offset)?;
+        // // Render text using specified color and style.
+        // self.render_text(widget, total_offset)?;
 
-        // Render the border.
-        if widget_ref.border.is_some() {
-            self.render_border(widget, total_offset)?;
-        }
+        // // Render the border.
+        // if widget_ref.border.is_some() {
+        //     self.render_border(widget, total_offset)?;
+        // }
 
         // Render the children.
         for child in &widget_ref.children {
-            self.render(child, parent_offset + widget_ref.position, bounds)?;
+            self.render(child, parent_offset + widget_ref.position, clipped_bounds)?;
         }
 
         // Set cursor position to corner of canvas to prevent flushing issue.
-        self.set_to_corner(bounds, out)?;
-
-        // Flush the output
-        out.flush()?;
-
-        // Update context size.
-        self.size = widget_ref.size;
+        self.set_to_corner(parent_bounds)?;
 
         Ok(())
+    }
+
+    pub fn calculate_total_offset(&self, parent_offset: Point, widget_position: Point) -> Point {
+        self.cursor_position + parent_offset + widget_position
     }
 
     pub fn render_background(
         &mut self,
         widget: &Rc<RefCell<Widget>>,
         total_offset: Point,
+        clipped_bounds: Size,
     ) -> Result<()> {
         let out = &mut stdout();
         let widget_ref = widget.borrow();
@@ -182,9 +199,9 @@ impl TermContext {
             }
         }
 
-        for i in 0..widget_ref.size.height {
+        for i in 0..clipped_bounds.height {
             out.queue(MoveTo(total_offset.x, total_offset.y + i))?;
-            out.queue(Print("█".repeat(widget_ref.size.width as usize)))?;
+            out.queue(Print("█".repeat(clipped_bounds.width as usize)))?;
         }
 
         out.queue(SetBackgroundColor(style::Color::Reset))?;
@@ -344,14 +361,32 @@ impl TermContext {
         Ok(())
     }
 
-    pub fn set_to_corner(&mut self, bounds: Size, out: &mut Stdout) -> Result<()> {
+    pub fn set_to_corner(&mut self, bounds: Size) -> Result<()> {
+        let out = &mut stdout();
         let offset = self.cursor_position + bounds.into();
         out.queue(MoveTo(offset.x, offset.y))?;
+        out.flush()?;
         Ok(())
     }
 
     pub fn canvas_height(&self) -> u16 {
         self.size.height - self.cursor_position.y
+    }
+
+    pub fn make_room(&mut self, bounds: Size) -> Result<()> {
+        let canvas_height = self.canvas_height();
+        if canvas_height < bounds.height + 1 {
+            let out = &mut stdout();
+            out.queue(MoveTo(0, self.cursor_position.y))?;
+            out.queue(ScrollUp(bounds.height - canvas_height))?;
+            out.queue(MoveTo(0, self.cursor_position.y - bounds.height + 1))?;
+            out.flush()?;
+
+            self.size = terminal::size()?.into();
+            self.cursor_position = cursor::position()?.into();
+        }
+
+        Ok(())
     }
 
     pub fn clear(&mut self) -> Result<()> {
@@ -362,9 +397,8 @@ impl TermContext {
             out.queue(Clear(ClearType::CurrentLine))?;
         }
 
+        out.queue(MoveTo(0, self.cursor_position.y))?;
         out.flush()?;
-
-        self.size = Size::new(0, 0);
 
         Ok(())
     }

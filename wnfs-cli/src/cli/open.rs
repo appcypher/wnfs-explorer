@@ -37,8 +37,20 @@ pub async fn handle(_noun: Noun) -> Result<()> {
     let mut context = TermContext::new()?;
 
     // Create sample widget.
-    let widget = utils::sample_widget()?;
+    let widget = utils::sample_widget_2()?;
     let widget_size = widget.borrow().size;
+
+    // let widget = match noun {
+    //     Noun::Fs => {
+    //         // Create tree widget for fs.
+    //         ui::root_widget(&store, config, store)?;
+    //     }
+    //     Noun::Forest => {
+    //         // Create key-value widget for forest.
+    //         ui::forest_widget(&store, config, store)?;
+    //     }
+    // };
+    // let widget_size = widget.borrow().size;
 
     // Event loop.
     context.event_loop(widget, Point::default(), widget_size)?;

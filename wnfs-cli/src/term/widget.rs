@@ -69,6 +69,8 @@ pub struct Widget {
     pub border_color: Color,
     pub border_style: BorderStyle,
     pub event_handler: Option<KeyEventHandler>,
+    pub vertical_scroll: bool, // TODO(appcypher): Implement vertical_scroll.
+    pub scroll_depth: u16,     // TODO(appcypher): Implement scroll_depth.
 }
 
 pub type KeyEventHandler = Box<dyn Fn(&Rc<RefCell<Widget>>, &KeyEvent) -> Result<()>>; // -> impl Future<Output = Result<()>>;
@@ -117,6 +119,10 @@ impl Color {
 
     pub fn blue() -> Self {
         Self(style::Color::Blue)
+    }
+
+    pub fn yellow() -> Self {
+        Self(style::Color::Yellow)
     }
 
     pub fn reset() -> Self {
@@ -368,7 +374,7 @@ impl Default for Widget {
             text_wrap: TextWrap::default(),
             text: String::new(),
             content_editable: false,
-            focusable: false,
+            focusable: true,
             focus_color: None,
             background_color: Color::white(),
             text_color: Color::black(),
@@ -376,6 +382,8 @@ impl Default for Widget {
             border_color: Color::black(),
             border_style: BorderStyle::default(),
             event_handler: None,
+            vertical_scroll: false,
+            scroll_depth: 0,
         }
     }
 }
@@ -401,4 +409,3 @@ impl Debug for Widget {
             .finish()
     }
 }
-
