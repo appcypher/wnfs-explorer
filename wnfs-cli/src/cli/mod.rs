@@ -6,7 +6,10 @@ pub mod repl;
 
 use clap::{Parser, Subcommand};
 use serde::{Deserialize, Serialize};
-use wnfs::libipld::Cid;
+
+//------------------------------------------------------------------------------
+// Types
+//------------------------------------------------------------------------------
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -36,7 +39,7 @@ pub enum Verb {
 #[derive(Subcommand)]
 pub enum Noun {
     Fs,
-    Hamt,
+    Forest,
 }
 
 #[derive(Parser, Debug, Serialize, Deserialize)]

@@ -42,10 +42,10 @@
 
 ## Building the Project
 
-### Using `cargo`
+### Running the wnfs-store server
 
 ```console
-cargo install wnfs-explorer
+RUST_LOG=debug cargo run -p wnfs-store
 ```
 
 ## Testing the Project

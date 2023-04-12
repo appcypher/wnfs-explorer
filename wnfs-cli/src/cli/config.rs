@@ -9,8 +9,11 @@ use std::{
 use wnfs::{private::PrivateForest, root_tree::RootTree};
 use wnfs_store::client::WnfsStore;
 
+//------------------------------------------------------------------------------
+// Functions
+//------------------------------------------------------------------------------
+
 pub fn handle(config: Config) -> Result<()> {
-    println!("Config: Writing configuration {:#?}", config);
     write_config_toml(&config)
 }
 
