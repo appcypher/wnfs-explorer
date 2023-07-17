@@ -18,7 +18,7 @@ anyhow = "1.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 clap = { version = "4.0", features = ["derive"] }
-crossterm = "0.25"
+crossterm = "0.26"
 wnfs-store = { path = "../wnfs-store" }
 wnfs = { git = "https://github.com/wnfs-wg/rs-wnfs", branch = "appcypher/hamt-diff" }
 
